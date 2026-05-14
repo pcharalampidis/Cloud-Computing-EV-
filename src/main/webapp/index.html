@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EV Charging Station Booking</title>
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+<header class="topbar">
+  <div>
+    <h1>EV Charging Station Booking</h1>
+    <p>Cloud-ready EV station discovery and booking system</p>
+  </div>
+
+  <div id="sessionBox" class="session-box hidden">
+    <span id="userInfo"></span>
+    <button id="logoutButton" class="secondary">Logout</button>
+  </div>
+</header>
+
+<section id="loginSection" class="card auth-card">
+  <h2>Login</h2>
+  <p class="muted">Use an existing DRIVER or ADMIN account.</p>
+
+  <form id="loginForm">
+    <label>Username</label>
+    <input id="username" type="text" required autocomplete="username" />
+
+    <label>Password</label>
+    <input id="password" type="password" required autocomplete="current-password" />
+
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="loginMessage" class="message"></p>
+</section>
+
+<main id="app" class="hidden">
+  <section class="grid">
+    <div class="card">
+      <h2>Charging Stations Map</h2>
+      <div id="map"></div>
+
+      <h3>Stations</h3>
+      <div id="stationsList" class="list"></div>
+    </div>
+
+    <div class="card">
+      <h2>Station Details</h2>
+      <div id="stationDetails" class="empty">
+        Select a station from the map or list.
+      </div>
+
+      <hr />
+
+      <h2>Availability & Booking</h2>
+      <div class="form-row">
+        <label for="bookingDate">Date</label>
+        <input id="bookingDate" type="date" />
+        <button id="refreshAvailabilityButton" class="secondary">Check availability</button>
+      </div>
+
+      <p id="selectedConnectorText" class="muted">No connector selected.</p>
+      <div id="availabilityList" class="slots"></div>
+
+      <div class="booking-form">
+        <label>Start time</label>
+        <input id="startTime" type="time" />
+
+        <label>End time</label>
+        <input id="endTime" type="time" />
+
+        <button id="createBookingButton">Create Booking</button>
+      </div>
+
+      <p id="bookingMessage" class="message"></p>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="section-head">
+      <h2>Bookings</h2>
+      <button id="reloadBookingsButton" class="secondary">Reload bookings</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Driver</th>
+          <th>Station</th>
+          <th>Connector</th>
+          <th>Date</th>
+          <th>Start</th>
+          <th>End</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody id="bookingsBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="adminPanel" class="card hidden">
+    <h2>Admin Management</h2>
+    <p class="muted">
+      Visible only to ADMIN users. It allows simple station and connector management.
+    </p>
+
+    <div class="admin-grid">
+      <div>
+        <h3>Station</h3>
+
+        <label>Station name</label>
+        <input id="adminStationName" type="text" placeholder="Central EV Station" />
+
+        <label>Address</label>
+        <input id="adminStationAddress" type="text" placeholder="Address" />
+
+        <label>Latitude</label>
+        <input id="adminStationLat" type="number" step="0.000001" placeholder="40.640063" />
+
+        <label>Longitude</label>
+        <input id="adminStationLng" type="number" step="0.000001" placeholder="22.944419" />
+
+        <div class="button-row">
+          <button id="adminCreateStation">Create</button>
+          <button id="adminUpdateStation" class="secondary">Update selected</button>
+          <button id="adminDeleteStation" class="danger">Delete selected</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Connector</h3>
+
+        <label>Station ID</label>
+        <input id="adminConnectorStationId" type="number" placeholder="Selected station ID" />
+
+        <label>Connector ID</label>
+        <input id="adminConnectorId" type="number" placeholder="Selected connector ID" />
+
+        <label>Connector type</label>
+        <input id="adminConnectorType" type="text" placeholder="Type 2 / CCS / CHAdeMO" />
+
+        <div class="button-row">
+          <button id="adminCreateConnector">Create</button>
+          <button id="adminUpdateConnector" class="secondary">Update</button>
+          <button id="adminDeleteConnector" class="danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <p id="adminMessage" class="message"></p>
+  </section>
+</main>
+
+<footer>
+  <p>CCS3341 Cloud Computing Coursework - EV Charging Booking System</p>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

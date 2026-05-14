@@ -1,30 +1,26 @@
 package com.evcharging.resource;
 
-import com.evcharging.dao.ConnectorDAO;
-import com.evcharging.dao.StationDAO;
 import com.evcharging.dto.ErrorResponse;
 import com.evcharging.dto.StationDetailsResponse;
-import com.evcharging.model.Connector;
 import com.evcharging.model.Station;
+import com.evcharging.service.StationService;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.SQLException;
-import java.util.List;
 
 @Path("/stations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class StationResource {
 
-    private final StationDAO stationDAO = new StationDAO();
-    private final ConnectorDAO connectorDAO = new ConnectorDAO();
+    private final StationService stationService = new StationService();
 
     @GET
     public Response getAllStations() {
         try {
-            return Response.ok(stationDAO.findAll()).build();
+            return Response.ok(stationService.getAllStations()).build();
         } catch (Exception e) {
             e.printStackTrace();
             return serverError();
@@ -35,16 +31,15 @@ public class StationResource {
     @Path("/{id}")
     public Response getStationById(@PathParam("id") int id) {
         try {
-            Station station = stationDAO.findById(id);
+            StationDetailsResponse response = stationService.getStationDetails(id);
 
-            if (station == null) {
+            if (response == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(new ErrorResponse("Station not found."))
                         .build();
             }
 
-            List<Connector> connectors = connectorDAO.findByStationId(id);
-            return Response.ok(new StationDetailsResponse(station, connectors)).build();
+            return Response.ok(response).build();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,18 +50,14 @@ public class StationResource {
     @POST
     public Response createStation(Station station) {
         try {
-            if (station == null || station.getName() == null || station.getAddress() == null) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Station name and address are required."))
-                        .build();
-            }
-
-            Station created = stationDAO.create(station);
+            Station created = stationService.createStation(station);
 
             return Response.status(Response.Status.CREATED)
                     .entity(created)
                     .build();
 
+        } catch (IllegalArgumentException e) {
+            return badRequest(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return serverError();
@@ -77,17 +68,18 @@ public class StationResource {
     @Path("/{id}")
     public Response updateStation(@PathParam("id") int id, Station station) {
         try {
-            boolean updated = stationDAO.update(id, station);
+            Station updated = stationService.updateStation(id, station);
 
-            if (!updated) {
+            if (updated == null) {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(new ErrorResponse("Station not found."))
                         .build();
             }
 
-            Station updatedStation = stationDAO.findById(id);
-            return Response.ok(updatedStation).build();
+            return Response.ok(updated).build();
 
+        } catch (IllegalArgumentException e) {
+            return badRequest(e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             return serverError();
@@ -98,7 +90,7 @@ public class StationResource {
     @Path("/{id}")
     public Response deleteStation(@PathParam("id") int id) {
         try {
-            boolean deleted = stationDAO.delete(id);
+            boolean deleted = stationService.deleteStation(id);
 
             if (!deleted) {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -116,6 +108,12 @@ public class StationResource {
             e.printStackTrace();
             return serverError();
         }
+    }
+
+    private Response badRequest(String message) {
+        return Response.status(Response.Status.BAD_REQUEST)
+                .entity(new ErrorResponse(message))
+                .build();
     }
 
     private Response serverError() {

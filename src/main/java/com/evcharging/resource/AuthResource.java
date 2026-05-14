@@ -1,11 +1,9 @@
 package com.evcharging.resource;
 
-import com.evcharging.dao.TokenDAO;
-import com.evcharging.dao.UserDAO;
 import com.evcharging.dto.ErrorResponse;
 import com.evcharging.dto.LoginRequest;
 import com.evcharging.dto.LoginResponse;
-import com.evcharging.model.User;
+import com.evcharging.service.AuthService;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -19,48 +17,28 @@ import javax.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuthResource {
 
-    private final UserDAO userDAO = new UserDAO();
-    private final TokenDAO tokenDAO = new TokenDAO();
+    private final AuthService authService = new AuthService();
 
     @POST
     @Path("/login")
     public Response login(LoginRequest request) {
         try {
-            if (request == null ||
-                    request.getUsername() == null ||
-                    request.getPassword() == null ||
-                    request.getUsername().isBlank() ||
-                    request.getPassword().isBlank()) {
+            LoginResponse response = authService.login(request);
 
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(new ErrorResponse("Username and password are required."))
-                        .build();
-            }
-
-            User user = userDAO.authenticate(
-                    request.getUsername(),
-                    request.getPassword()
-            );
-
-            if (user == null) {
+            if (response == null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                         .entity(new ErrorResponse("Invalid username or password."))
                         .build();
             }
 
-            String token = tokenDAO.createToken(user.getUsername());
-
-            LoginResponse response = new LoginResponse(
-                    token,
-                    user.getUsername(),
-                    user.getRole()
-            );
-
             return Response.ok(response).build();
 
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(new ErrorResponse(e.getMessage()))
+                    .build();
         } catch (Exception e) {
             e.printStackTrace();
-
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(new ErrorResponse("Login failed because of a server error."))
                     .build();

@@ -3,6 +3,9 @@ package com.evcharging.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class BookingRequest {
+
+    private String username;
+
     @JsonProperty("connector_id")
     private int connectorId;
 
@@ -16,6 +19,10 @@ public class BookingRequest {
     private String endTime;
 
     public BookingRequest() {
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public int getConnectorId() {
