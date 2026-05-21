@@ -86,13 +86,18 @@ ON bookings(username, booking_date, status);
 INSERT INTO users(username, password_hash, role) VALUES
 ('admin', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'ADMIN'),
 ('driver1', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'DRIVER'),
-('driver2', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'DRIVER');
+('driver2', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'DRIVER'),
+('driver3', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'DRIVER'),
+('driver4', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'DRIVER'),
+('driver5', '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8', 'DRIVER');
 
 -- Mock stations
 INSERT INTO stations(name, address, latitude, longitude) VALUES
 ('City Centre Charger', '10 Tsimiski Street, Thessaloniki', 40.63290000, 22.94080000),
 ('University Charger', 'University Campus, Thessaloniki', 40.62930000, 22.95840000),
-('Seafront Charger', 'Nikis Avenue, Thessaloniki', 40.62630000, 22.94840000);
+('Seafront Charger', 'Nikis Avenue, Thessaloniki', 40.62630000, 22.94840000),
+('Airport Supercharger', 'Makedonia Airport, Thessaloniki', 40.52440000, 22.97500000),
+('Cosmos Mall Charger', '11th km Thessaloniki - Moudania, Thessaloniki', 40.55570000, 22.99610000);
 
 -- Mock connectors
 INSERT INTO connectors(station_id, connector_type) VALUES
@@ -100,9 +105,19 @@ INSERT INTO connectors(station_id, connector_type) VALUES
 (1, 'CCS'),
 (2, 'Type 2'),
 (2, 'CHAdeMO'),
-(3, 'CCS');
+(3, 'CCS'),
+(4, 'CCS'),
+(4, 'CCS'),
+(4, 'Type 2'),
+(5, 'Type 2'),
+(5, 'Type 2');
 
 -- Mock bookings
 INSERT INTO bookings(username, station_id, connector_id, booking_date, start_time, end_time, status) VALUES
 ('driver1', 1, 1, '2026-05-20', '10:00', '11:00', 'ACTIVE'),
-('driver2', 1, 2, '2026-05-20', '12:00', '13:00', 'ACTIVE');
+('driver2', 1, 2, '2026-05-20', '12:00', '13:00', 'ACTIVE'),
+('driver3', 4, 6, '2026-05-21', '09:00', '10:30', 'ACTIVE'),
+('driver4', 4, 7, '2026-05-21', '09:30', '11:00', 'ACTIVE'),
+('driver5', 5, 9, '2026-05-22', '14:00', '16:00', 'ACTIVE'),
+('driver1', 5, 10, '2026-05-22', '14:30', '15:30', 'ACTIVE'),
+('driver2', 2, 3, '2026-05-23', '08:00', '09:00', 'ACTIVE');
